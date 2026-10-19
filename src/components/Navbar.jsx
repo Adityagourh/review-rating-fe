@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, LogOut, PlusCircle, User, Sun, Moon } from "lucide-react";
+import { Sparkles, Menu, X, LogOut, LayoutDashboard, Sun, Moon } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import clsx from "clsx";
+import Avatar from "./Avatar";
 
 const links = [
   { to: "/", label: "Home" },
@@ -14,8 +15,7 @@ const links = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
-  const { isAuthenticated, user, logout } = useAuth();
-  const isAdmin = user?.role === "admin";
+  const { isAuthenticated, isAdmin, user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
 
@@ -57,7 +57,7 @@ export default function Navbar() {
               className={({ isActive }) =>
                 clsx(
                   "relative text-sm font-medium transition-colors",
-                  isActive ? "text-white" : "text-slate-400 hover:text-slate-200"
+                  isActive ? "text-slate-100" : "text-slate-400 hover:text-slate-200"
                 )
               }
             >
@@ -88,14 +88,14 @@ export default function Navbar() {
           {isAuthenticated ? (
             <>
               {isAdmin && (
-                <Link to="/companies/add" className="btn-ghost !py-2 !px-4 text-sm">
-                  <PlusCircle size={16} />
-                  Add company
+                <Link to="/admin" className="btn-ghost !py-2 !px-4 text-sm">
+                  <LayoutDashboard size={16} />
+                  Admin panel
                 </Link>
               )}
-              <div className="chip !py-1.5">
-                <User size={14} />
-                {user?.name || "Account"}
+              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-3">
+                <Avatar name={user?.name || ""} src={user?.profilePic} size="h-7 w-7" />
+                <span className="text-sm font-medium text-slate-200">{user?.name || "Account"}</span>
               </div>
               <button
                 onClick={handleLogout}
@@ -159,11 +159,11 @@ export default function Navbar() {
                 <>
                   {isAdmin && (
                     <Link
-                      to="/companies/add"
+                      to="/admin"
                       onClick={() => setOpen(false)}
                       className="rounded-lg px-3 py-2.5 text-sm font-medium text-slate-300 hover:bg-white/5"
                     >
-                      Add company
+                      Admin panel
                     </Link>
                   )}
                   <button

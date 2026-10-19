@@ -43,7 +43,7 @@ default port `9000`) is running. No other backend changes are required.
 | `/` | Landing page — hero, search, featured companies |
 | `/companies` | Browse/search all companies (A–Z filter + free text) |
 | `/companies/:id` | Company profile — details, reviews, add a review |
-| `/companies/add` | Add a new company (requires login) |
+| `/admin` | Admin panel — dashboard, companies, users, reviews (admin only) |
 | `/login`, `/register` | Auth |
 | `/forgot-password` | Request a password-reset email |
 | `/user/reset-password/:id/:token` | Matches the link the backend emails (see `emailService`) |

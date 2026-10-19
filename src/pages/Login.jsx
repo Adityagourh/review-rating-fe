@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, Sparkles, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
+import { jwtDecode } from "jwt-decode";
 import { loginUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import GradientBlobs from "../components/GradientBlobs";
@@ -28,7 +29,8 @@ export default function Login() {
       const { data } = await loginUser(form);
       login(data.token);
       toast.success(data.message || "Welcome back!");
-      navigate(from, { replace: true });
+      const isAdmin = jwtDecode(data.token)?.userData?.userRole === "admin";
+      navigate(isAdmin && from === "/" ? "/admin" : from, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Login failed. Try again.");
     } finally {

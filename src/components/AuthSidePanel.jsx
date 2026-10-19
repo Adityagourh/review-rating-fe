@@ -4,7 +4,7 @@ import GradientBlobs from "./GradientBlobs";
 
 export default function AuthSidePanel({ eyebrow, title, subtitle }) {
   return (
-    <div className="relative hidden overflow-hidden border-r border-white/10 bg-ink-950 px-14 py-16 lg:flex lg:flex-col lg:justify-between">
+    <div className="auth-panel relative hidden overflow-hidden border-r border-white/10 bg-ink-950 px-14 py-16 lg:flex lg:flex-col lg:justify-between">
       <GradientBlobs />
 
       <motion.div

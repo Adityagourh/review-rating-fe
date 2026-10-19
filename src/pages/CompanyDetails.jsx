@@ -22,7 +22,7 @@ import { averageRating, colorFromString, initials } from "../utils/helpers";
 
 export default function CompanyDetails() {
   const { id } = useParams();
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, isAdmin, user } = useAuth();
   const navigate = useNavigate();
 
   const [company, setCompany] = useState(null);
@@ -250,7 +250,7 @@ export default function CompanyDetails() {
                 {reviews.map((r) => {
                   const reviewerId =
                     typeof r.userId === "object" ? r.userId?._id : r.userId;
-                  const canManage = isAuthenticated && reviewerId === user?.id;
+                  const canManage = isAdmin || (isAuthenticated && reviewerId === user?.id);
                   return (
                     <ReviewCard
                       key={r._id}

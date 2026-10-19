@@ -10,12 +10,14 @@ import {
   Star,
   Building2,
   BadgeCheck,
-  Gift,
 } from "lucide-react";
 import GradientBlobs from "../components/GradientBlobs";
 import CompanyCard from "../components/CompanyCard";
 import { CompanyCardSkeleton } from "../components/Loader";
 import { getCompanyList } from "../api/company";
+import { getReviewList } from "../api/review";
+import { useAuth } from "../context/AuthContext";
+import { statsByCompany } from "../utils/helpers";
 
 const features = [
   {
@@ -47,11 +49,16 @@ const item = {
 export default function Home() {
   const [query, setQuery] = useState("");
   const [companies, setCompanies] = useState([]);
+  const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
+  const { isAdmin } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     let active = true;
+    getReviewList()
+      .then(({ data }) => active && setStats(statsByCompany(data?.comment || [])))
+      .catch(() => {});
     getCompanyList()
       .then(({ data }) => {
         if (active) setCompanies(data?.companys || []);
@@ -169,8 +176,11 @@ export default function Home() {
               100% real reviews
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Gift size={15} className="text-gold-400" />
-              Free forever
+              <Star size={15} className="text-gold-400" />
+              <strong className="text-slate-200">
+                {Object.values(stats).reduce((n, s) => n + s.count, 0)}
+              </strong>
+              reviews shared
             </span>
           </motion.div>
         </motion.div>
@@ -199,19 +209,21 @@ export default function Home() {
           {!loading && companies.length === 0 && (
             <div className="glass-card col-span-full flex flex-col items-center gap-3 p-10 text-center">
               <Building2 className="text-slate-500" size={28} />
-              <p className="text-sm text-slate-400">
-                No companies yet — be the first to add one.
-              </p>
-              <Link to="/companies/add" className="btn-primary !py-2 !px-4 text-sm">
-                Add a company
-              </Link>
+              <p className="text-sm text-slate-400">No companies listed yet.</p>
+              {isAdmin && (
+                <Link to="/admin/companies?new=1" className="btn-primary !py-2 !px-4 text-sm">
+                  Add a company
+                </Link>
+              )}
             </div>
           )}
 
           {!loading &&
             companies
               .slice(0, 6)
-              .map((c, i) => <CompanyCard company={c} index={i} key={c._id} />)}
+              .map((c, i) => (
+                <CompanyCard company={c} stats={stats[c._id]} index={i} key={c._id} />
+              ))}
         </div>
       </section>
 

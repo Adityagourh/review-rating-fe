@@ -16,3 +16,12 @@ export const getCompanyDetails = (id) =>
 // GET /company/searchcompany/:letters
 export const searchCompaniesByLetters = (letters) =>
   axiosClient.get(`/company/searchcompany/${encodeURIComponent(letters)}`);
+
+// PATCH /company/update/:id — admin only, multipart/form-data (profilePic optional)
+export const updateCompany = (id, formData) =>
+  axiosClient.patch(`/company/update/${id}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+
+// DELETE /company/delete/:id — admin only, also removes the company's reviews
+export const deleteCompany = (id) => axiosClient.delete(`/company/delete/${id}`);

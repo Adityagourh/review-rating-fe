@@ -5,16 +5,16 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Sora", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["Clash Display", "Sora", "ui-sans-serif", "sans-serif"],
+        sans: ["Plus Jakarta Sans", "ui-sans-serif", "system-ui", "sans-serif"],
+        display: ["Sora", "Plus Jakarta Sans", "ui-sans-serif", "sans-serif"],
       },
       colors: {
         ink: {
-          950: "#07070c",
-          900: "#0b0b12",
-          850: "#12121c",
-          800: "#181826",
-          700: "#242438",
+          950: "#08080d",
+          900: "#0c0c13",
+          850: "#13131c",
+          800: "#1a1a25",
+          700: "#262634",
         },
         brand: {
           50: "#f2f0ff",
@@ -37,14 +37,13 @@ export default {
         },
       },
       backgroundImage: {
-        "grid-fade":
-          "linear-gradient(to bottom, transparent, rgba(0,0,0,0.9)), radial-gradient(circle at 1px 1px, rgba(255,255,255,0.08) 1px, transparent 0)",
         "hero-glow":
           "radial-gradient(60% 60% at 50% 0%, rgba(124,58,237,0.35) 0%, rgba(124,58,237,0) 70%)",
       },
       boxShadow: {
-        glow: "0 0 0 1px rgba(255,255,255,0.06), 0 8px 30px -8px rgba(124,58,237,0.45)",
-        card: "0 1px 0 rgba(255,255,255,0.05) inset, 0 20px 40px -20px rgba(0,0,0,0.6)",
+        glow: "0 0 0 1px rgba(255,255,255,0.06), 0 8px 24px -10px rgba(124,58,237,0.55)",
+        card: "0 1px 0 rgba(255,255,255,0.04) inset, 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -16px rgba(0,0,0,0.5)",
+        lift: "0 1px 0 rgba(255,255,255,0.06) inset, 0 24px 48px -20px rgba(0,0,0,0.65)",
       },
       animation: {
         blob: "blob 16s infinite",

@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { Search, Building2, PlusCircle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { getCompanyList } from "../api/company";
+import { getReviewList } from "../api/review";
+import { statsByCompany } from "../utils/helpers";
 import CompanyCard from "../components/CompanyCard";
 import { CompanyCardSkeleton } from "../components/Loader";
 import EmptyState from "../components/EmptyState";
@@ -14,15 +16,18 @@ const ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
 export default function Companies() {
   const [params, setParams] = useSearchParams();
   const [companies, setCompanies] = useState([]);
+  const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const query = params.get("q") || "";
-  const { isAuthenticated, user } = useAuth();
-  const isAdmin = user?.role === "admin";
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     let active = true;
     setLoading(true);
+    getReviewList()
+      .then(({ data }) => active && setStats(statsByCompany(data?.comment || [])))
+      .catch(() => {});
     getCompanyList()
       .then(({ data }) => {
         if (active) setCompanies(data?.companys || []);
@@ -59,8 +64,8 @@ export default function Companies() {
             {loading ? "Loading…" : `${filtered.length} of ${companies.length} companies`}
           </p>
         </div>
-        {isAuthenticated && isAdmin && (
-          <Link to="/companies/add" className="btn-primary self-start sm:self-auto">
+        {isAdmin && (
+          <Link to="/admin/companies?new=1" className="btn-primary self-start sm:self-auto">
             <PlusCircle size={16} />
             Add company
           </Link>
@@ -106,7 +111,7 @@ export default function Companies() {
           Array.from({ length: 6 }).map((_, i) => <CompanyCardSkeleton key={i} />)}
 
         {!loading && filtered.map((c, i) => (
-          <CompanyCard company={c} index={i} key={c._id} />
+          <CompanyCard company={c} stats={stats[c._id]} index={i} key={c._id} />
         ))}
       </div>
 
@@ -116,13 +121,15 @@ export default function Companies() {
           title="No companies found"
           subtitle={
             query
-              ? `Nothing matches "${query}". Try a different search or add it yourself.`
-              : "Be the first to add a company to Rately."
+              ? `Nothing matches "${query}". Try a different search.`
+              : "No companies have been listed yet."
           }
           action={
-            <Link to="/companies/add" className="btn-primary !py-2 !px-4 text-sm">
-              Add a company
-            </Link>
+            isAdmin && (
+              <Link to="/admin/companies?new=1" className="btn-primary !py-2 !px-4 text-sm">
+                Add a company
+              </Link>
+            )
           }
         />
       )}

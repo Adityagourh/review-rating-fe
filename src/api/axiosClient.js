@@ -19,8 +19,10 @@ axiosClient.interceptors.response.use(
   (error) => {
     // Backend issues short-lived tokens (2 min) — bounce to login on expiry/invalid token
     const status = error?.response?.status;
-    if (status === 401 || status === 409) {
+    if ((status === 401 || status === 409) && localStorage.getItem("rately_token")) {
       localStorage.removeItem("rately_token");
+      // AuthContext listens for this so the UI logs out instead of acting on a dead token
+      window.dispatchEvent(new Event("rately:auth-expired"));
     }
     return Promise.reject(error);
   }

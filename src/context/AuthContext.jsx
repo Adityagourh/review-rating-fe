@@ -46,6 +46,12 @@ export function AuthProvider({ children }) {
     setUser(decoded);
   }, [token]);
 
+  useEffect(() => {
+    const onExpired = () => setToken(null);
+    window.addEventListener("rately:auth-expired", onExpired);
+    return () => window.removeEventListener("rately:auth-expired", onExpired);
+  }, []);
+
   const login = (newToken) => {
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
@@ -62,6 +68,7 @@ export function AuthProvider({ children }) {
       token,
       user,
       isAuthenticated: Boolean(user),
+      isAdmin: user?.role === "admin",
       login,
       logout,
     }),

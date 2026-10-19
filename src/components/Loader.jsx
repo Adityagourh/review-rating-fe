@@ -15,12 +15,16 @@ export function PageLoader() {
 export function CompanyCardSkeleton() {
   return (
     <div className="glass-card p-5">
-      <div className="skeleton h-32 w-full" />
-      <div className="skeleton mt-4 h-4 w-3/4" />
-      <div className="skeleton mt-2 h-3 w-1/2" />
-      <div className="mt-4 flex gap-2">
-        <div className="skeleton h-6 w-16 rounded-full" />
-        <div className="skeleton h-6 w-16 rounded-full" />
+      <div className="flex gap-4">
+        <div className="skeleton h-14 w-14 shrink-0 rounded-2xl" />
+        <div className="flex-1">
+          <div className="skeleton h-4 w-3/4" />
+          <div className="skeleton mt-2 h-3 w-1/2" />
+        </div>
+      </div>
+      <div className="mt-5 flex justify-between border-t border-white/[0.07] pt-4">
+        <div className="skeleton h-4 w-16" />
+        <div className="skeleton h-4 w-20" />
       </div>
     </div>
   );
