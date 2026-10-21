@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Mail, Lock, LogIn, Sparkles, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
-import { jwtDecode } from "jwt-decode";
 import { loginUser } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import GradientBlobs from "../components/GradientBlobs";
@@ -13,8 +12,7 @@ export default function Login() {
   const [form, setForm] = useState({ userEmail: "", userPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
-  const navigate = useNavigate();
+  const { login, isAuthenticated, isAdmin } = useAuth();
   const location = useLocation();
 
   const from = location.state?.from?.pathname || "/";
@@ -29,14 +27,17 @@ export default function Login() {
       const { data } = await loginUser(form);
       login(data.token);
       toast.success(data.message || "Welcome back!");
-      const isAdmin = jwtDecode(data.token)?.userData?.userRole === "admin";
-      navigate(isAdmin && from === "/" ? "/admin" : from, { replace: true });
     } catch (err) {
       toast.error(err?.response?.data?.message || "Login failed. Try again.");
     } finally {
       setLoading(false);
     }
   };
+
+  // logged in (just now, or already) — admins go to the panel unless they were headed somewhere inside it
+  if (isAuthenticated) {
+    return <Navigate to={isAdmin ? (from.startsWith("/admin") ? from : "/admin") : from} replace />;
+  }
 
   return (
     <div className="relative grid min-h-[calc(100vh-73px)] grid-cols-1 lg:grid-cols-2">

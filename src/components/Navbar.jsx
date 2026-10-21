@@ -1,11 +1,115 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Menu, X, LogOut, LayoutDashboard, Sun, Moon } from "lucide-react";
+import {
+  Sparkles,
+  Menu,
+  X,
+  LogOut,
+  LayoutDashboard,
+  Sun,
+  Moon,
+  ChevronDown,
+  ShieldCheck,
+  Shield,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useTheme } from "../context/ThemeContext";
 import clsx from "clsx";
 import Avatar from "./Avatar";
+
+function RoleBadge({ isAdmin }) {
+  return (
+    <span
+      className={clsx(
+        "chip !px-2 !py-0.5 !text-[11px]",
+        isAdmin && "!border-emerald-400/30 !bg-emerald-500/10 !text-emerald-300"
+      )}
+    >
+      {isAdmin ? <ShieldCheck size={11} /> : <Shield size={11} />}
+      {isAdmin ? "Admin" : "Member"}
+    </span>
+  );
+}
+
+function ProfileMenu({ user, isAdmin, onLogout }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e) => !ref.current?.contains(e.target) && setOpen(false);
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, [open]);
+
+  const item =
+    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-white/[0.06] hover:text-slate-100";
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-2.5 transition-colors hover:border-white/20 hover:bg-white/[0.06]"
+      >
+        <Avatar name={user?.name || ""} src={user?.profilePic} size="h-7 w-7" />
+        <span className="max-w-[10rem] truncate text-sm font-medium text-slate-200">
+          {user?.name || "Account"}
+        </span>
+        <ChevronDown
+          size={15}
+          className={clsx("text-slate-400 transition-transform", open && "rotate-180")}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            role="menu"
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className="glass-card absolute right-0 mt-2 w-64 origin-top-right bg-ink-850 p-1.5 shadow-lift"
+          >
+            <div className="flex items-center gap-3 px-3 py-3">
+              <Avatar name={user?.name || ""} src={user?.profilePic} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-slate-100">{user?.name}</p>
+                <p className="truncate text-xs text-slate-500">{user?.email}</p>
+              </div>
+            </div>
+            <div className="px-3 pb-3">
+              <RoleBadge isAdmin={isAdmin} />
+            </div>
+            <div className="my-1 h-px bg-white/10" />
+            {isAdmin && (
+              <Link to="/admin" role="menuitem" onClick={() => setOpen(false)} className={item}>
+                <LayoutDashboard size={16} />
+                Admin panel
+              </Link>
+            )}
+            <button
+              role="menuitem"
+              onClick={onLogout}
+              className={clsx(item, "hover:!bg-red-500/10 hover:!text-red-400")}
+            >
+              <LogOut size={16} />
+              Log out
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 const links = [
   { to: "/", label: "Home" },
@@ -93,17 +197,7 @@ export default function Navbar() {
                   Admin panel
                 </Link>
               )}
-              <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] py-1 pl-1 pr-3">
-                <Avatar name={user?.name || ""} src={user?.profilePic} size="h-7 w-7" />
-                <span className="text-sm font-medium text-slate-200">{user?.name || "Account"}</span>
-              </div>
-              <button
-                onClick={handleLogout}
-                className="btn-ghost !py-2 !px-3 text-sm"
-                title="Log out"
-              >
-                <LogOut size={16} />
-              </button>
+              <ProfileMenu user={user} isAdmin={isAdmin} onLogout={handleLogout} />
             </>
           ) : (
             <>
@@ -157,6 +251,14 @@ export default function Navbar() {
               <div className="my-2 h-px bg-white/10" />
               {isAuthenticated ? (
                 <>
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <Avatar name={user?.name || ""} src={user?.profilePic} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-slate-100">{user?.name}</p>
+                      <p className="truncate text-xs text-slate-500">{user?.email}</p>
+                    </div>
+                    <RoleBadge isAdmin={isAdmin} />
+                  </div>
                   {isAdmin && (
                     <Link
                       to="/admin"

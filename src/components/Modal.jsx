@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { X, AlertTriangle } from "lucide-react";
 
@@ -10,7 +11,8 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
-  return (
+  // portal: page transitions put a transform on ancestors, which would trap position:fixed
+  return createPortal(
     <AnimatePresence>
       {open && (
         <motion.div
@@ -28,7 +30,7 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 12, scale: 0.98 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className={`glass-card relative max-h-[90vh] w-full ${width} overflow-y-auto !bg-ink-850 p-6 shadow-lift`}
+            className={`glass-card relative max-h-[90vh] w-full ${width} overflow-y-auto bg-ink-850 p-6 shadow-lift`}
           >
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
@@ -43,7 +45,8 @@ export default function Modal({ open, onClose, title, subtitle, children, width 
           </motion.div>
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
 

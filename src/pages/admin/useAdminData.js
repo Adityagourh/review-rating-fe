@@ -18,7 +18,7 @@ export default function useAdminData() {
     if (c.status === "fulfilled") setCompanies(c.value.data?.companys || []);
     if (r.status === "fulfilled") setReviews(r.value.data?.comment || []);
     if (u.status === "fulfilled") setUsers(u.value.data?.users || []);
-    if ([c, r, u].some((x) => x.status === "rejected")) toast.error("Some data couldn't be loaded.");
+    if ([c, r, u].some((x) => x.status === "rejected")) toast.error("Some data couldn't be loaded.", { id: "admin-load" });
     setLoading(false);
   }, []);
 

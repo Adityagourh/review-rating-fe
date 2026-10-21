@@ -55,6 +55,9 @@ export function AuthProvider({ children }) {
   const login = (newToken) => {
     localStorage.setItem(TOKEN_KEY, newToken);
     setToken(newToken);
+    // set user in the same render as the token, otherwise a redirect right after
+    // login hits ProtectedRoute while user is still null and bounces back to /login
+    setUser(decodeUser(newToken));
   };
 
   const logout = () => {
